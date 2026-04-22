@@ -1,0 +1,37 @@
+{
+  "name": "xhsou",
+  "version": "1.0.0",
+  "description": "小红书搜索 Skill - 使用 Puppeteer 自动化浏览器获取真实数据",
+  "main": "src/xhs-crawler.js",
+  "type": "module",
+  "scripts": {
+    "search": "node src/cli.js",
+    "demo": "node examples/demo.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "xiaohongshu",
+    "xhs",
+    "crawler",
+    "puppeteer",
+    "claude-code",
+    "skill"
+  ],
+  "author": "chanytzzz",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chanytzzz/xhsou.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chanytzzz/xhsou/issues"
+  },
+  "homepage": "https://github.com/chanytzzz/xhsou#readme",
+  "dependencies": {
+    "puppeteer": "^22.0.0",
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
