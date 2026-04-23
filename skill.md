@@ -55,26 +55,42 @@ XHS_COOKIE=你的Cookie字符串
 
 ## 使用示例
 
-```javascript
-import { searchXhsKeywords } from './xhs-puppeteer.js';
+### 基础搜索（快速，无准确日期）
 
-// 搜索指定日期的内容
-const xhsResults = await searchXhsKeywords(
-  ['迪卡侬', '瑜伽服', 'Lululemon平替'],
+```javascript
+import { searchXhsKeywords } from './crawler/xhs-simple.js';
+
+// 搜索热门内容
+const results = await searchXhsKeywords(
+  ['始祖鸟', 'Arc\'teryx', '户外穿搭'],
   {
     maxResults: 50,
-    headless: true,
-    startDate: '2026-04-01',
-    endDate: '2026-04-23'
+    headless: true
   }
 );
+```
+
+### 带发布时间的搜索（较慢，准确日期）
+
+```javascript
+import { searchXiaohongshuWithDate } from './crawler/xhs-simple.js';
+
+// 搜索4月发布的内容
+const results = await searchXiaohongshuWithDate('迪卡侬穿搭', {
+  maxResults: 50,
+  headless: true,
+  startDate: '2026-04-01',
+  endDate: '2026-04-30',
+  fetchPublishDate: true,  // 访问详情页获取准确时间
+  fetchLimit: 30           // 最多访问30个详情页
+});
 ```
 
 ## 参数说明
 
 ### searchXiaohongshu(keyword, options)
 
-单个关键词搜索
+**基础搜索**（快速，但无准确发布时间）
 
 - `keyword` (string): 搜索关键词
 - `options` (object):
@@ -83,19 +99,36 @@ const xhsResults = await searchXhsKeywords(
   - `startDate` (string): 开始日期，格式 'YYYY-MM-DD'，可选
   - `endDate` (string): 结束日期，格式 'YYYY-MM-DD'，可选
 
-**日期筛选逻辑**：
-1. 先搜索获取所有结果
-2. 读取每条笔记的发布时间
+⚠️ **限制**：此方法使用API数据，无法获取准确发布时间，所有结果的 `publishDate` 为 `null`。
+
+### searchXiaohongshuWithDate(keyword, options)
+
+**带发布时间的搜索**（访问详情页，较慢但准确）
+
+- `keyword` (string): 搜索关键词
+- `options` (object):
+  - `maxResults` (number): 最多返回结果数，默认20
+  - `headless` (boolean): 是否无头模式，默认true
+  - `startDate` (string): 开始日期，格式 'YYYY-MM-DD'，可选
+  - `endDate` (string): 结束日期，格式 'YYYY-MM-DD'，可选
+  - `fetchPublishDate` (boolean): 是否访问详情页获取准确发布时间，默认true
+  - `fetchLimit` (number): 最多访问多少个详情页，默认20（避免过长时间）
+
+**工作流程**：
+1. 先搜索获取所有结果（通过API）
+2. 逐个访问详情页，从HTML中提取准确发布时间
 3. 按发布时间降序排序（最新的在前）
-4. 根据startDate/endDate筛选
+4. 根据startDate/endDate筛选（仅对有发布时间的结果）
 5. 返回指定数量的结果
+
+⚠️ **性能提示**：每个详情页访问耗时约1.5-2秒，20条需要30-40秒
 
 ### searchXhsKeywords(keywords, options)
 
-批量关键词搜索
+批量关键词搜索（使用基础搜索）
 
 - `keywords` (string[]): 关键词数组
-- `options`: 同上
+- `options`: 同 `searchXiaohongshu`
 
 ## 返回数据格式
 
@@ -110,12 +143,16 @@ const xhsResults = await searchXhsKeywords(
     comments: 56,         // 评论数
     collects: 89,         // 收藏数
     source: "小红书",
-    date: "2026-04-21T10:30:00.000Z",
-    publishDate: Date对象,
-    rawTimestamp: 1713686400  // 原始时间戳
+    noteId: "69e40a4b000000002102c19a",  // 笔记ID
+    date: "2026-04-21T10:30:00.000Z",    // ISO格式日期字符串
+    publishDate: Date对象 或 null        // 仅 searchXiaohongshuWithDate 返回准确日期
   }
 ]
 ```
+
+**发布时间说明**：
+- `searchXiaohongshu()`: `publishDate` 为 `null`，`date` 为当前时间
+- `searchXiaohongshuWithDate()`: `publishDate` 为准确的Date对象（如果成功获取），`date` 为ISO字符串
 
 ## 内容价值过滤规则
 
@@ -185,10 +222,15 @@ const analysis = await analyzeNews(searchResults, {
 
 ## 注意事项
 
-1. **性能考虑**：每次搜索需要启动浏览器，耗时约3-5秒/关键词
+1. **性能考虑**：
+   - 基础搜索：耗时约3-5秒/关键词
+   - 带发布时间搜索：每个详情页1.5-2秒，20条约30-40秒
 2. **频率限制**：建议每次搜索后间隔2秒，避免被限流
 3. **Cookie有效期**：Cookie可能过期，需要定期更新
-4. **日期准确性**：小红书API返回的时间戳可能不完全准确
+4. **日期筛选方案选择**：
+   - **方案1：快速但不准确** - 使用 `searchXiaohongshu()` + `sort=time` 参数，获取最新内容但无法验证准确日期
+   - **方案2：准确但较慢** - 使用 `searchXiaohongshuWithDate()`，访问详情页获取准确发布时间
+   - **方案3：混合使用** - 先快速搜索获取热门内容，再对TOP结果访问详情页验证日期
 5. **场景选择**：根据使用场景选择合适的分析模式（行业简报 vs 趋势分析）
 
 ## 技术实现
