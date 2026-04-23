@@ -1,8 +1,8 @@
 ---
 name: xhsou
 version: 1.0.0
-description: 使用Puppeteer自动化浏览器搜索小红书，获取K12教育行业相关的真实内容
-tags: [crawler, xiaohongshu, xhs, k12, education, puppeteer]
+description: 使用Puppeteer自动化浏览器搜索小红书，获取各行业/内容类型的真实数据
+tags: [crawler, xiaohongshu, xhs, trends, content-analysis, puppeteer]
 author: chenyt
 created: 2026-04-22
 user-invocable: true
@@ -10,7 +10,7 @@ user-invocable: true
 
 # 小红书搜索工具 (xhsou)
 
-使用Puppeteer自动化浏览器，绕过小红书的反爬机制，获取K12教育行业的真实数据。
+使用Puppeteer自动化浏览器，绕过小红书的反爬机制，获取各行业/内容类型的真实数据。
 
 ## 功能特点
 
