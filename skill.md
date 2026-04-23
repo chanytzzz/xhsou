@@ -53,20 +53,19 @@ const results = await searchXhsKeywords(['K12教育', '高途', '作业帮'], {
 XHS_COOKIE=你的Cookie字符串
 ```
 
-## 集成到K12简报系统
-
-在 `crawler/search.js` 中已集成：
+## 使用示例
 
 ```javascript
 import { searchXhsKeywords } from './xhs-puppeteer.js';
 
-// 搜索指定日期的K12相关内容
+// 搜索指定日期的内容
 const xhsResults = await searchXhsKeywords(
-  ['K12教育', '高途', '作业帮', '学而思', '好未来'],
+  ['迪卡侬', '瑜伽服', 'Lululemon平替'],
   {
-    maxResults: 20,
+    maxResults: 50,
     headless: true,
-    dateFilter: '2026-04-21'
+    startDate: '2026-04-01',
+    endDate: '2026-04-23'
   }
 );
 ```
@@ -203,11 +202,6 @@ const analysis = await analyzeNews(searchResults, {
 5. 解析JSON数据，提取文章信息
 6. 按日期筛选（如果指定）
 
-### 文件位置
-
-- 核心实现：`/Users/chenyt/Desktop/k12-daily-brief/crawler/xhs-puppeteer.js`
-- 集成入口：`/Users/chenyt/Desktop/k12-daily-brief/crawler/search.js`
-- 主流程：`/Users/chenyt/Desktop/k12-daily-brief/index-ai.js`
 
 ## 示例：完整工作流
 
@@ -218,17 +212,17 @@ npm install puppeteer
 # 2. 配置Cookie（.env文件）
 echo "XHS_COOKIE=your_cookie_here" >> .env
 
-# 3. 运行完整简报生成
-npm run run:ai
+# 3. 运行搜索
+node your-script.js
 
-# 输出：
+# 输出示例：
 # ✅ 搜索小红书...
-# 🔍 搜索小红书: K12教育...
-#   日期筛选: 2026-04-21
-#   ✓ 找到 9 条结果
-#   ✓ 日期筛选后: 3 条结果
+# 🔍 搜索小红书: 迪卡侬穿搭...
+#   日期筛选: 2026-04-01 至 2026-04-23
+#   ✓ 找到 71 条结果
+#   ✓ 日期筛选后: 42 条结果（点赞≥100）
 # ...
-# ✅ 搜索完成！共找到 15 条结果（仅4月21日）
+# ✅ 搜索完成！
 ```
 
 ## 内容清单生成
@@ -317,4 +311,4 @@ for (const date of dates) {
 
 - [Puppeteer文档](https://pptr.dev/)
 - [小红书开放平台](https://open.xiaohongshu.com/)
-- K12简报系统：`/Users/chenyt/Desktop/k12-daily-brief/`
+- [GitHub仓库](https://github.com/chanytzzz/xhsou)
