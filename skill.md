@@ -1,7 +1,7 @@
 ---
 name: xhsou
 version: 1.0.0
-description: 使用Puppeteer自动化浏览器搜索小红书，获取各行业/内容类型的真实数据
+description: 使用Puppeteer自动化浏览器搜索小红书，获取真实内容并输出洞察报告
 tags: [crawler, xiaohongshu, xhs, trends, content-analysis, puppeteer]
 author: chenyt
 created: 2026-04-22
